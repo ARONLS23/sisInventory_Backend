@@ -7,4 +7,6 @@ public interface ICategoryService {
     //Esctructura de respuesta http y englobar respuesta "CategoryResponseRest"
     public ResponseEntity<CategoryResponseRest> search();
 
+    public ResponseEntity<CategoryResponseRest> searchById(Long id);
+
 }
