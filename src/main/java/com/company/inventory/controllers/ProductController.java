@@ -38,4 +38,10 @@ public class ProductController {
         return response;
     }
 
+    @GetMapping("/products/{productId}")
+    public ResponseEntity<ProductResponseRest> searchProductById(@PathVariable Long productId){
+        ResponseEntity<ProductResponseRest> response = productService.searchById(productId);
+        return response;
+    }
+
 }

@@ -5,12 +5,13 @@ import com.company.inventory.models.Product;
 import com.company.inventory.repositories.ICategoryRepository;
 import com.company.inventory.repositories.IProductRepository;
 import com.company.inventory.response.ProductResponseRest;
-import com.company.inventory.response.ResponseRest;
 import com.company.inventory.services.IProductService;
+import com.company.inventory.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class ProductServiceImpl implements IProductService {
     private ICategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     public ResponseEntity<ProductResponseRest> save(Product product, Long categoryId) {
 
         ProductResponseRest response = new ProductResponseRest();
@@ -56,6 +58,37 @@ public class ProductServiceImpl implements IProductService {
         }catch (Exception e) {
             e.getStackTrace();
             response.setMetadata("Respuesta no ok", "-1", "Error al guardar al producto");
+            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional (readOnly = true)
+    public ResponseEntity<ProductResponseRest> searchById(Long productId) {
+
+        ProductResponseRest response = new ProductResponseRest();
+        List<Product> products = new ArrayList<>();
+
+        try {
+
+            Optional<Product> product = productRepository.findById(productId);
+
+            if (product.isPresent()){
+                byte[] imagenDescompressed = Util.decompressZLib(product.get().getPicture());
+                product.get().setPicture(imagenDescompressed);
+                products.add(product.get());
+                response.getProductResponse().setProducts(products);
+                response.setMetadata("Respuesta ok", "00", "Producyo encontrado");
+            }else {
+                response.setMetadata("Respuesta no ok", "-1", "Producto no encontrado");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+        }catch (Exception e) {
+            e.getStackTrace();
+            response.setMetadata("Respuesta no ok", "-1", "Error al buscar al producto");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
