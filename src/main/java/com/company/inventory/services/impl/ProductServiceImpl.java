@@ -124,7 +124,7 @@ public class ProductServiceImpl implements IProductService {
 
         }catch (Exception e) {
             e.getStackTrace();
-            response.setMetadata("Respuesta no ok", "-1", "Error al buscar al productos por nombre");
+            response.setMetadata("Respuesta no ok", "-1", "Error al buscar productos por nombre");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -145,6 +145,42 @@ public class ProductServiceImpl implements IProductService {
         }catch (Exception e) {
             e.getStackTrace();
             response.setMetadata("Respuesta no ok", "-1", "Error al eliminar producto");
+            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional (readOnly = true)
+    public ResponseEntity<ProductResponseRest> search() {
+
+        ProductResponseRest response = new ProductResponseRest();
+        List<Product> products = new ArrayList<>();
+        List<Product> listAux = new ArrayList<>();
+
+        try {
+
+            listAux = productRepository.findAll();
+
+            if (!listAux.isEmpty()) {
+
+                listAux.stream().forEach( (p) -> {
+                    byte[] imagenDescompressed = Util.decompressZLib(p.getPicture());
+                    p.setPicture(imagenDescompressed);
+                    products.add(p);
+                });
+
+                response.getProductResponse().setProducts(products);
+                response.setMetadata("Respuesta ok", "00", "Productos encontrado");
+            }else {
+                response.setMetadata("Respuesta no ok", "-1", "Producto no encontrado");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+        }catch (Exception e) {
+            e.getStackTrace();
+            response.setMetadata("Respuesta no ok", "-1", "Error al buscar productos");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
