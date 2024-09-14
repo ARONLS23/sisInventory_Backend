@@ -57,7 +57,7 @@ public class ProductServiceImpl implements IProductService {
 
         }catch (Exception e) {
             e.getStackTrace();
-            response.setMetadata("Respuesta no ok", "-1", "Error al guardar al producto");
+            response.setMetadata("Respuesta no ok", "-1", "Error al guardar producto");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -88,7 +88,7 @@ public class ProductServiceImpl implements IProductService {
 
         }catch (Exception e) {
             e.getStackTrace();
-            response.setMetadata("Respuesta no ok", "-1", "Error al buscar al producto");
+            response.setMetadata("Respuesta no ok", "-1", "Error al buscar producto");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -125,6 +125,26 @@ public class ProductServiceImpl implements IProductService {
         }catch (Exception e) {
             e.getStackTrace();
             response.setMetadata("Respuesta no ok", "-1", "Error al buscar al productos por nombre");
+            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ProductResponseRest> deleteById(Long productId) {
+
+        ProductResponseRest response = new ProductResponseRest();
+
+        try {
+
+            productRepository.deleteById(productId);
+            response.setMetadata("Respuesta ok", "00", "Producto eliminado");
+
+        }catch (Exception e) {
+            e.getStackTrace();
+            response.setMetadata("Respuesta no ok", "-1", "Error al eliminar producto");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
