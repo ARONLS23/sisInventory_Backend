@@ -10,4 +10,6 @@ public interface IProductService {
 
     public ResponseEntity<ProductResponseRest> searchById (Long productId);
 
+    public ResponseEntity<ProductResponseRest> searchByName (String name);
+
 }
