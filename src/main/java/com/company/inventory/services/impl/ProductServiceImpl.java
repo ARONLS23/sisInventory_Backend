@@ -172,15 +172,67 @@ public class ProductServiceImpl implements IProductService {
                 });
 
                 response.getProductResponse().setProducts(products);
-                response.setMetadata("Respuesta ok", "00", "Productos encontrado");
+                response.setMetadata("Respuesta ok", "00", "Productos encontrados");
             }else {
-                response.setMetadata("Respuesta no ok", "-1", "Producto no encontrado");
+                response.setMetadata("Respuesta no ok", "-1", "Productos no encontrados");
                 return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
             }
 
         }catch (Exception e) {
             e.getStackTrace();
             response.setMetadata("Respuesta no ok", "-1", "Error al buscar productos");
+            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<ProductResponseRest> update(Product product, Long categoryId, Long productId) {
+
+        ProductResponseRest response = new ProductResponseRest();
+        List<Product> products = new ArrayList<>();
+
+        try {
+
+            Optional<Category> category = categoryRepository.findById(categoryId);
+
+            if (category.isPresent()){
+                product.setCategory(category.get());
+            }else {
+                response.setMetadata("Respuesta no ok", "-1", "Categoriá no encontrada asociada al producto");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+            Optional<Product> productSearch = productRepository.findById(productId);
+
+            if (productSearch.isPresent()) {
+                productSearch.get().setQuantity(product.getQuantity());
+                productSearch.get().setCategory(product.getCategory());
+                productSearch.get().setName(product.getName());
+                productSearch.get().setPicture(product.getPicture());
+                productSearch.get().setPrice(product.getPrice());
+
+                Product productToUpdate = productRepository.save(productSearch.get());
+
+                if (productToUpdate != null) {
+                    products.add(productToUpdate);
+                    response.getProductResponse().setProducts(products);
+                    response.setMetadata("Respuesta ok", "00", "Producto actualizado");
+                }else {
+                    response.setMetadata("Respuesta no ok", "-1", "Producto no actualizado");
+                    return new ResponseEntity<ProductResponseRest>(response, HttpStatus.BAD_REQUEST);
+                }
+
+            }else {
+                response.setMetadata("Respuesta no ok", "-1", "Producto no actualizado");
+                return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+        }catch (Exception e) {
+            e.getStackTrace();
+            response.setMetadata("Respuesta no ok", "-1", "Error al actualizar producto");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
