@@ -167,4 +167,35 @@ public class CategoryServiceImpl implements ICategoryService {
         return new ResponseEntity<CategoryResponseRest>(categoryResponse, HttpStatus.OK);
 
     }
+
+    @Override
+    @Transactional (readOnly = true)
+    public ResponseEntity<CategoryResponseRest> searchByName(String name) {
+
+        CategoryResponseRest categoryResponse = new CategoryResponseRest();
+        List<Category> list = new ArrayList<>();
+        List<Category> listAux = new ArrayList<>();
+
+        try{
+
+            listAux = categoryRepository.findByNameContainingIgnoreCase(name);
+
+            if(listAux.size() > 0){
+                categoryResponse.getCategoryResponse().setCategory(listAux);
+                categoryResponse.setMetadata("Respuesta ok", "00", "Categorías encontradas");
+
+            }else {
+                categoryResponse.setMetadata("Respuesta no ok", "-1", "Categorías no encontradas");
+                return new ResponseEntity<CategoryResponseRest>(categoryResponse, HttpStatus.NOT_FOUND);
+            }
+
+        }catch (Exception e){
+
+            categoryResponse.setMetadata("Respuesta no ok", "-1", "Error al buscar categorías");
+            e.getStackTrace();
+            return new ResponseEntity<CategoryResponseRest>(categoryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+        return new ResponseEntity<CategoryResponseRest>(categoryResponse, HttpStatus.OK);
+    }
 }

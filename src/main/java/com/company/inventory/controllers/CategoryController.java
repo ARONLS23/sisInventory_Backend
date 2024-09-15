@@ -55,4 +55,12 @@ public class CategoryController {
 
     }
 
+    @GetMapping("/categories/filter/{name}")
+    public ResponseEntity<CategoryResponseRest> searchCategoriesByName(@PathVariable String name){
+
+        ResponseEntity<CategoryResponseRest> categoryResponse = categoryService.searchByName(name);
+        return categoryResponse;
+
+    }
+
 }
