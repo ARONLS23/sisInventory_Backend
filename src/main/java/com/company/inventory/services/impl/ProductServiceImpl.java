@@ -13,9 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ProductServiceImpl implements IProductService {
@@ -237,5 +235,21 @@ public class ProductServiceImpl implements IProductService {
         }
 
         return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional (readOnly = true)
+    public List<Map<String, Object>> countByCategory() {
+        List<Object[]> results = productRepository.countProductsByCategory();
+        List<Map<String, Object>> formattedResults = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> categoryCount = new HashMap<>();
+            categoryCount.put("categoryName", result[0]);
+            categoryCount.put("productCount", result[1]);
+            formattedResults.add(categoryCount);
+        }
+
+        return formattedResults;
     }
 }

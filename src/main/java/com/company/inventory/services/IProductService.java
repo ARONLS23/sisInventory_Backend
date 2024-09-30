@@ -4,6 +4,9 @@ import com.company.inventory.models.Product;
 import com.company.inventory.response.ProductResponseRest;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+import java.util.Map;
+
 public interface IProductService {
 
     public ResponseEntity<ProductResponseRest> save (Product product, Long categoryId);
@@ -17,5 +20,7 @@ public interface IProductService {
     public ResponseEntity<ProductResponseRest> search ();
 
     public ResponseEntity<ProductResponseRest> update (Product product, Long categoryId, Long productId);
+
+    public List<Map<String, Object>> countByCategory ();
 
 }

@@ -15,4 +15,7 @@ public interface IProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByNameContainingIgnoreCase(String name);
 
+    @Query("select c.name, COUNT(*) from Product p join p.category c group by c.name")
+    List<Object[]> countProductsByCategory();
+
 }

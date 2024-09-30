@@ -1,10 +1,8 @@
 package com.company.inventory.controllers;
 
 import com.company.inventory.models.Product;
-import com.company.inventory.response.CategoryResponseRest;
 import com.company.inventory.response.ProductResponseRest;
 import com.company.inventory.services.IProductService;
-import com.company.inventory.util.CategoryExcelExporter;
 import com.company.inventory.util.ProductExcelExporter;
 import com.company.inventory.util.Util;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @CrossOrigin("*")
 @RestController
@@ -101,6 +101,11 @@ public class ProductController {
 
         excelExporter.export(response);
 
+    }
+
+    @GetMapping("/products/count")
+    public List<Map<String, Object>> countProductByCategory() {
+        return productService.countByCategory();
     }
 
 }
